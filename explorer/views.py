@@ -3,15 +3,17 @@ from django.views import generic
 from rest_framework import generics
 from .serializers import MedBlockSerializer
 from .models import MedBlock
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
+from django.contrib.auth import views as auth_views
 
-class HospitalView(generic.TemplateView):
+class HospitalView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'hospital.html'
 
-class InsuranceView(generic.TemplateView):
+class InsuranceView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'insurance.html'
 
-class ExplorerView(generic.TemplateView):
+class ExplorerView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'explorer.html'
 
 class SupplyChainView(generic.TemplateView):

@@ -18,14 +18,19 @@ from django.urls import path
 from explorer import views
 from django.conf.urls.static import static
 from django.conf import settings
+from django.conf.urls import url
+from django.contrib.auth import views as auth_views
+
 urlpatterns = [
-    path('',views.ExplorerView.as_view()),
+    path('login/', auth_views.LoginView.as_view(), name="login"),
+    path('logout/',auth_views.LogoutView.as_view(next_page='/'), name="logout"),
+    path('admin/', admin.site.urls),
     path('insurance/', views.InsuranceView.as_view()),
     path('hospital/', views.HospitalView.as_view()),
+    path('',views.ExplorerView.as_view()),
     path('medblock/', views.MedBlockListCreateView.as_view()),
     path('32HFdF1649Fd1DE5CfADb8Ca7II0bbcd2A3FfFf5f1D2af1bDc4dAfffd44d55Dr/', views.SupplyChainView.as_view()),
     path('medblock/<str:hash>/', views.MedBlockDetailView.as_view()),
-    path('admin/', admin.site.urls),
     path('<str:hash>/', views.ExplorerDetailView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
