@@ -25,7 +25,7 @@ SECRET_KEY = '-%i5jiq=iq2b8e-7)8$l!dp_c#*cbi$1-vu-@z2o@pu9w2cjc_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -121,6 +121,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = '/uploads/'
+MEDIA_ROOT = '~/medblocksdemo/uploads/'
 
 MEDIA_URL = '/media/'
