@@ -700,7 +700,14 @@ fn.down = round.bind(null, 'floor');
                 insurancePermission(hash) {
                     axios.patch(
                         '/medblock/'+hash+'/',
-                        {'insuranceHasPermission': true}
+                        {'insuranceHasPermission': true},
+                        {
+                            headers: {
+                                'X-CSRFToken': Cookies.get('csrftoken'),
+                                'Content-Type': 'multipart/form-data',
+                            }
+                        }
+
                     )
                     .then(this.loadAndShow())
                 }
