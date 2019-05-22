@@ -1,0 +1,104 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MedBlocks Explorer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css"> -->
+</head>
+<body>
+    {% verbatim %}
+    <section class="section hero">
+        <div class="hero-head">
+            <h1 class="title has-text-centered">MedBlocks explorer</h1>
+        </div>
+    </section>
+    <section class="section" id="app">
+        <div class="container">
+            <div class="columns">
+                <div class="column">
+                        <div>
+                            <div class="">
+                                <h2 class="subtitle">32HFdF1649Fd1DE5CfADb8Ca7II0bbcd2A3FfFf5f1D2af1bDc4dAfffd44d55Dr</h2>
+                                <p>
+                                    
+                                </p>
+                                <div class="box">
+                                    <p>
+                                        Type: MEDBLOCKS:INVOICE
+                                    </p>
+                                    <p>
+                                        <span>
+                                            Creted by: Demo Pharmacy
+                                        </span>
+                                        <span class="icon has-text-success" @mouseover="mouseOver=true">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                        <span class="has-text-grey" v-show="mouseOver">Verified on Identity smart contract</span>
+                                    </p>
+                                    <div class="content">
+                                            <p>Sale: </p>
+                                            <table class="table">
+                                                <thead>
+                                                    <th>Item</th>
+                                                    <th>Quantity</th>
+                                                    <th>Supply chain</th>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="drug in drugs">
+                                                           <td>
+                                                               {{drug}}
+                                                           </td>
+                                                           <td>200</td> 
+                                                           <td><a href="">Track supply</a></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                    </div>
+                                    <hr>
+                                    <p>
+                                        Signature: <code>
+                                        fdsevPizGmrnAS4U0ORveX+bCfVq+GJzLZUyWfzkiwvvfBLKutuA46fasivg/fzdo8GWO0xYGwApyJt28f+LDG==
+                                    </code>
+                                            
+                                    </p>
+                                    
+                                    <p>Data:</p>
+                                    <pre class="is-family-monospace code" style="word-wrap: break-word;">{{encryptedData}}</pre>
+                                </div>
+                            </div>  
+                        </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+{% endverbatim %}
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+<script>
+    app = new Vue({
+        el:'#app',
+        data: {
+            page: 'medblocks',
+            medblock: null,
+            mouseOver: false,
+            drugs: ['Paracetamol', 'Ibuprofen', 'Aspirin', 'Pantoprazole', 'Omeprazole'],
+            encryptedData: [...Array(100)].map(i=>([...Array(100)].map(i=>(~~(Math.random()*36)).toString(36)).join(''))).join('\n')
+        },
+        methods: {
+        },
+        mounted(){
+            // encryptedData = 
+        }
+        
+        })
+</script>
+</html>

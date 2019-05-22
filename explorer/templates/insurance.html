@@ -1,0 +1,104 @@
+{% verbatim %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Demo Insurance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css"> -->
+</head>
+<body>
+    <body>
+      <section class="section" id="app">
+        <div class="container">
+          <div class="heading">
+            <h1 class="title">Demo Insurance Company</h1>
+            <h2 class="subtitle">
+              Make health care easy
+            </h2>
+          </div>
+          <hr>
+          <div class="level">
+            <div class="level-item">
+              <input type="text" class="input" placeholder="Search">
+            </div>
+          </div>
+          <div class="level">
+              <div class="level-left">
+                  <button class="button">Search</button>
+              </div>
+          </div>
+          <div class="columns">
+            <div class="column is-3">
+              <figure>
+                <img width=55% src="/static/dp2.png">
+              </figure>
+            </div>
+            <div class="column">
+              <div class="content">
+                <p>Name: Sidharth R</p>
+                <p>Insurance number: 153487923874</p>
+                <p>Plan type: Annual Plan 8A1C</p>
+              </div>
+              <table class="table">
+
+              <thead>
+                <tr>
+                  <th>Hash</th>
+                  <th>File name</th>
+                  <th>Permissions</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="medblock in medblocks">
+                  <td>
+                    {{medblock.hash.slice(0,35)}}
+                  </td>
+              
+                  <td v-if="medblock.type=='MEDBLOCK:FILE'">{{medblock.data}}</td>
+                  <td v-if="medblock.type=='MEDBLOCK:INVOICE'">INVOICE 1</td>
+                  <td>
+                    <span class="tag is-light">Sidharth R</span>
+                    <span class="tag is-light">Demo Hospital</span>
+                    <span class="tag is-primary" :class="{'is-hidden': !medblock.insuranceHasPermission}">Max Bupa</span>
+                    <!-- <span class="tag is-light">Max Bhupa Health Insurance</span> -->
+                  </td>
+                  <td>
+                    <a :href="medblock.file" target="blank">View file</a>
+                  </td>
+                  <td>
+                    <a :href="`/${medblock.hash}`" target="_blank">View block</a>
+                  </td>
+                </tr>
+              </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </body>
+
+</body>
+{% endverbatim %}
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script>
+app = new Vue({
+  el: '#app',
+  data: {
+    medblocks: null,
+  },
+  mounted() {
+    axios.get('/medblock/')
+    .then(r=>r.data).then(data=>{this.medblocks=data.filter(d=>d.insuranceHasPermission)})
+  }
+})
+</script>
+</html>

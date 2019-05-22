@@ -1,0 +1,84 @@
+{% verbatim %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>MedBlocks Explorer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css"> -->
+</head>
+<body>
+    <section class="section hero">
+        <div class="hero-head">
+            <h1 class="title has-text-centered">MedBlocks explorer</h1>
+        </div>
+    </section>
+    <section class="section" id="app">
+        <div class="container">
+            <div class="columns">
+                <div class="column">
+                        <div class="tabs is-centered">
+                                <ul>
+                                  <li :class="{'is-active':page=='identity'}" @click="page='identity'"><a>Identity</a></li>
+                                  <li :class="{'is-active':page=='medblocks'}" @click="page='medblocks'"><a>MedBlocks</a></li>
+                                </ul>
+                        </div>
+                        <div :class="{'is-hidden':page!=='medblocks'}">
+                            <div class="box" v-for="m in medblocks">
+                                <a :href="`/${m.hash}`"><h2>{{m.hash}}</h2></a>
+                                <p>{{m.type}}</p>
+                            </div>
+                        </div>
+                        <div :class="{'is-hidden':page!=='identity'}">
+                                <div class="box">
+                                    <h2>Insurance Desk</h2>
+                                    <pre>-----BEGIN PUBLIC KEY-----<br>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDKajcszhyDgYT9RfLYwwEUodXR<br>b8BebDUlRoHU/8ZAMPK88CJ54PyKYuvRtS1Frnq2/71esbiR5B/04pDgYck17Tki<br>mbUvCngiLtl011JCJpmSeAWSdNFYWYjb5SUay7/LC5OuMpSnWAH7dYURPNZqc3Ym<br>HxF9N47566ivUAMOWQIDAQAB<br>-----END PUBLIC KEY-----</pre>
+                                </div>
+                                <div class="box">
+                                        <h2>Satellite Pharmacy</h2>
+                                        <pre>-----BEGIN PUBLIC KEY-----<br>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDKajcszhyDgYT9RfLYwwEUodXR<br>b8BebDUlRoHU/8ZAMPK88CJ54PyKYuvRtS1Frnq2/71esbiR5B/04pDgYck17Tki<br>mbUvCngiLtl011JCJpmSeAWSdNFYWYjb5SUay7/LC5OuMpSnWAH7dYURPNZqc3Ym<br>HxF9N47566ivUAMOWQIDAQAB<br>-----END PUBLIC KEY-----</pre>
+                                </div>
+                                <div class="box">
+                                        <h2>Demo Pharmacy</h2>
+                                        <pre>-----BEGIN PUBLIC KEY-----<br>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDKajcszhyDgYT9RfLYwwEUodXR<br>b8BebDUlRoHU/8ZAMPK88CJ54PyKYuvRtS1Frnq2/71esbiR5B/04pDgYck17Tki<br>mbUvCngiLtl011JCJpmSeAWSdNFYWYjb5SUay7/LC5OuMpSnWAH7dYURPNZqc3Ym<br>HxF9N47566ivUAMOWQIDAQAB<br>-----END PUBLIC KEY-----</pre>
+                                </div>
+                                <div class="box">
+                                        <h2>Demo Hospital - Doctor 1</h2>
+                                        <pre>-----BEGIN PUBLIC KEY-----<br>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDKajcszhyDgYT9RfLYwwEUodXR<br>b8BebDUlRoHU/8ZAMPK88CJ54PyKYuvRtS1Frnq2/71esbiR5B/04pDgYck17Tki<br>mbUvCngiLtl011JCJpmSeAWSdNFYWYjb5SUay7/LC5OuMpSnWAH7dYURPNZqc3Ym<br>HxF9N47566ivUAMOWQIDAQAB<br>-----END PUBLIC KEY-----</pre>
+                                </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+<script>
+    app = new Vue({
+        el:'#app',
+        data: {
+            page: 'medblocks',
+            medblocks: [],
+        },
+        methods: {
+            getMedBlocks(){
+            axios.get('/medblock/')
+            .then(r=>r.data)
+            .then(data=>{this.medblocks=data})
+            }
+        },
+        mounted(){
+            this.getMedBlocks()
+        }
+        
+        })
+</script>
+</html>
+{% endverbatim %}

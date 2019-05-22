@@ -1,0 +1,716 @@
+{% verbatim %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Demo Hospital</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css">
+</head>
+<body>
+    <nav class="navbar has-shadow">
+        <div class="navbar-brand">
+            <a href="" class="navbar-item">
+                <h1 class="subtitle">Demo Hospital</h1>
+            </a>
+        </div>
+        <!-- <div class="navbar-end">
+                <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link">
+                          Notifications
+                        </a>
+                
+                        <div class="navbar-dropdown">
+                          <a class="navbar-item">
+                            None
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+        </div> -->
+    </nav>
+
+    <section class="section" id="panel">
+            <div class="columns">
+                <!-- Side bar -->
+                <div class="column is-4-tablet is-3-desktop is-2-widescreen">
+                    <aside class="menu">
+                        <ul class="menu-list">
+                            <li><a :class="{'is-active': page == 'records'}" @click="page='records'"><span class="icon"><i class="fas fa-book"></i></span>Records</a></li>
+                            <li><a :class="{'is-active': page == 'pharmacy'}" @click="page='pharmacy'"><span class="icon"><i class="fas fa-briefcase-medical"></i></span>Pharmacy</a></li>
+                            <li><a :class="{'is-active': page == 'notifications'}" @click="page='notifications'"><span class="icon"><i class="fas fa-bell"></i></span>Notifications <span class="icon is-small is-size-7 has-text-danger"><i class="fas fa-circle"></i></span></a></li>
+                        </ul>
+                    </aside>
+                </div>
+                <div class="column">
+                    <div class="level">
+                        <div class="level-left">
+                            <div class="level-item">
+                                <b-field label="Patient search">
+                                        <b-autocomplete v-model="name" :data="patientList" placeholder="Phone number or email"
+                                            @select="loadAndShow">
+                                            <template slot="empty">No results found</template>
+                                        </b-autocomplete>
+                            </div>
+                                
+                        </div>
+                    </div>
+                    
+                    <b-loading :is-full-page="true" :active.sync="loading" :can-cancel="true"></b-loading>
+                    <div class="columns" :class="{'is-hidden': !showPatientDetail}">
+                        <div class="column is-10">
+                                <h1 class="subtitle">Patient Information</h1>
+                            <div class="columns">
+                                <div class="column">
+                                        <div class="content">
+                                            <p><strong>Name:</strong> Sidharth R</p>
+                                            <p><strong>Age:</strong> 21</p>
+                                            <p><strong>Sex:</strong> Male</p>
+                                        </div>
+                                    </div>
+                                    <div class="column">
+                                            <div class="content">
+                                                <p><strong>Hospital number:</strong> 1501013123</p>
+                                                <p><strong>OP number:</strong> 554B</p>
+                                                <p><strong>Unit:</strong> Medicine 4</p>
+                                            </div>
+                                    </div>
+                            </div>
+                            <div class="columns">
+                                <!-- Records -->
+                                <div class="column" :class="{'is-hidden': page !== 'records'}">
+                                        <hr>
+                                        <div class="level">
+                                            <div class="level-left">
+                                                <div class="level-item">
+                                                        <button class="button">Add by hash</button>
+                                                </div>
+                                                <div class="level-item">
+                                                        <b-upload v-model="file" @input="confirmUpload">
+                                                                <a class="button" style="cursor: pointer">
+                                                                    <span class="file-icon">
+                                                                            <i class="fas fa-upload"></i>
+                                                                    </span>
+                                                                    <span>Upload a record...</span>
+                                                                </a>
+                                                            </b-upload>
+                                                </div>
+                                                
+                                            </div>
+                                            
+                                        </div>
+                                        <div>
+                                            <!-- List of medBlocks (records)-->
+                                            <table class="table is-fullwidth">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Hash</th>
+                                                        <th>File name</th>
+                                                        <th>Permissions</th>
+                                                        <th></th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="medblock in medblocks">
+                                                        <td>
+                                                            {{medblock.hash.slice(0,35)}}
+                                                        </td>
+                                                        
+                                                        <td v-if="medblock.type=='MEDBLOCK:FILE'">{{medblock.data}}</td>
+                                                        <td v-if="medblock.type=='MEDBLOCK:INVOICE'">INVOICE 1</td>
+                                                        <td>
+                                                            <span class="tag is-light">Sidharth R</span>
+                                                            <span class="tag is-light">Demo Hospital</span>
+                                                            <span class="tag is-primary" :class="{'is-hidden': !medblock.insuranceHasPermission}">Max Bupa</span>
+                                                            <!-- <span class="tag is-light">Max Bhupa Health Insurance</span> -->
+                                                            <b-dropdown aria-role="list">
+                                                                    <p
+                                                                        class="tag is-info"
+                                                                        slot="trigger"
+                                                                        style="cursor: pointer;"
+                                                                        role="button">
+                                                                        <span class="icon"><i class="fas fa-plus"></i></span>
+                                                                        <span>Add permission</span>
+                                                                    </p>
+                                                                    
+                                                                    <b-dropdown-item aria-role="listitem" @click="insurancePermission(medblock.hash)">Max Bupa</b-dropdown-item>
+                                                                    <b-dropdown-item aria-role="listitem">ICICI Lombard</b-dropdown-item>
+                                                                    <b-dropdown-item aria-role="listitem">Apollo Munich</b-dropdown-item>
+                                                            </b-dropdown>
+                                                        </td>
+                                                        <td>
+                                                            <a :href="medblock.file" target="blank">View file</a>
+                                                        </td>
+                                                        <td>
+                                                            <a :href="`/${medblock.hash}`" target="_blank">View block</a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                </div>
+
+                                <!-- Pharmacy -->
+
+                                <div class="container" :class="{'is-hidden': page !== 'pharmacy'}">
+                                <div class="column" >
+                                            <b-field label="Drug search">
+                                                    <b-autocomplete v-model="drug" :data="drugList" placeholder="Drug name..."
+                                                    @select="option=>{if (option) {addedDrugs.push([option,'1'])}}">
+                                                        <template slot="empty">No results found</template>
+                                            </b-autocomplete>
+                                        
+                                </div>
+                                <table class="table is-fullwidth">
+                                        <thead>
+                                            <tr>
+                                                <th>Drug</th>
+                                                <th style="width:40px">Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="i, k in addedDrugs">
+                                                <td>{{i[0]}}</td>
+                                                <td><input class="input" type="number" value="1" v-model="i[1]"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <button class="button is-link" @click="generateBill">
+                                        Generate bill
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                                <figure>
+                                        <img width=65% src="/static/dp1.jpg">
+                                </figure>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+</body>
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/buefy/dist/buefy.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+<script>
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+exports.endianness = function () { return 'LE' };
+
+exports.hostname = function () {
+    if (typeof location !== 'undefined') {
+        return location.hostname
+    }
+    else return '';
+};
+
+exports.loadavg = function () { return [] };
+
+exports.uptime = function () { return 0 };
+
+exports.freemem = function () {
+    return Number.MAX_VALUE;
+};
+
+exports.totalmem = function () {
+    return Number.MAX_VALUE;
+};
+
+exports.cpus = function () { return [] };
+
+exports.type = function () { return 'Browser' };
+
+exports.release = function () {
+    if (typeof navigator !== 'undefined') {
+        return navigator.appVersion;
+    }
+    return '';
+};
+
+exports.networkInterfaces
+= exports.getNetworkInterfaces
+= function () { return {} };
+
+exports.arch = function () { return 'javascript' };
+
+exports.platform = function () { return 'browser' };
+
+exports.tmpdir = exports.tmpDir = function () {
+    return '/tmp';
+};
+
+exports.EOL = '\n';
+
+exports.homedir = function () {
+	return '/'
+};
+
+},{}],2:[function(require,module,exports){
+const receipt = require('receipt');
+
+window.receipt = receipt
+function createDrugReciept(addedDrugs) {
+    receipt.config.currency = 'Rs.';
+    receipt.config.width = 60;
+    receipt.config.ruler = '-';
+    total = addedDrugs.map(drug=>parseInt(drug[1])*10)
+    total = total.reduce(function(a, b) { return a + b; }, 0);
+
+    output = receipt.create([
+        {
+            type: 'text', value: [
+                'SATELLITE PHARMACY',
+                '123 STORE ST',
+            ], align: 'center'
+        },
+        { type: 'empty' },
+        {
+            type: 'properties', lines: [
+                { name: 'Order Number', value: 'GT-4434212' },
+                { name: 'Date', value: '12/2/2019' }
+            ]
+        },
+        { type: 'table', lines: addedDrugs.map(drug=>{return {qty:parseInt(drug[1]), item:drug[0], cost:1000}}) },
+        { type: 'empty' },
+        {
+            type: 'properties', lines: [
+                { name: 'GST (15.00%)', value: 'Rs. ' + 0.15*total },
+                { name: 'Total amount (incl. GST)', value: 'Rs. '+Math.round(total *(1.15)) }
+            ]
+        },
+        { type: 'empty' },
+        { type: 'empty' },
+        { type: 'text', value: 'Thank you for your purchase. Get well soon!', align: 'center', padding: 5 }
+    ]);
+    return output
+}
+
+window.createDrugReciept = createDrugReciept;
+},{"receipt":6}],3:[function(require,module,exports){
+'use strict';
+var numberIsNan = require('number-is-nan');
+
+module.exports = Number.isFinite || function (val) {
+	return !(typeof val !== 'number' || numberIsNan(val) || val === Infinity || val === -Infinity);
+};
+
+},{"number-is-nan":5}],4:[function(require,module,exports){
+'use strict';
+var numberIsFinite = require('is-finite');
+
+module.exports = Number.isInteger || function (x) {
+	return numberIsFinite(x) && Math.floor(x) === x;
+};
+
+},{"is-finite":3}],5:[function(require,module,exports){
+'use strict';
+module.exports = Number.isNaN || function (x) {
+	return x !== x;
+};
+
+},{}],6:[function(require,module,exports){
+module.exports = require('./src/receipt');
+},{"./src/receipt":8}],7:[function(require,module,exports){
+'use strict';
+
+const EOL = require('os').EOL;
+const utils = require('./utils');
+
+module.exports = {
+	empty(chunk) {
+		return utils.pad('', ' ', this.config.width, utils.PAD_RIGHT);
+	},
+
+	ruler(chunk) {
+		return utils.pad('', this.config.ruler, this.config.width, utils.PAD_RIGHT);
+	},
+
+	text(chunk) {
+		if (Array.isArray(chunk.value)) {
+			// Expand array to multiple text calls with same formatting.
+			return chunk.value.map((value) => {
+				return this.formatters.text({ type: chunk.type, value: value, align: chunk.align, padding: chunk.padding });
+			}).join(EOL);
+		}
+
+		let chars = this.config.width - (chunk.hasOwnProperty('padding') ? (chunk.hasOwnProperty('align') && chunk.align === 'center' ? chunk.padding * 2 : chunk.padding) : 0);
+		let words = chunk.value.split(/\s/g);
+		let lines = [];
+		let line = '';
+
+		words.reverse();
+
+		while (words.length > 0) {
+			let word = words.pop();
+
+			if (line.length + word.length > chars) {
+				lines.push(line);
+				line = '';
+			}
+
+			line += word + ' ';
+		}
+
+		lines.push(line);
+
+		let alignTypes = {
+			left: utils.PAD_RIGHT,
+			right: utils.PAD_LEFT,
+			center: utils.PAD_BOTH
+		};
+
+		if (lines) {
+			return lines.map((line) => {
+				line = line.replace(/\s+$|^\s+/, '');
+
+				if (chunk.hasOwnProperty('align')) {
+					if (alignTypes.hasOwnProperty(chunk.align)) {
+						return utils.pad(line, ' ', this.config.width, alignTypes[chunk.align]);
+					}
+				}
+
+				return utils.pad(line, ' ', this.config.width, utils.PAD_RIGHT);
+			}).join(EOL);
+		}
+
+		return '';
+	},
+
+	properties(chunk) {
+		let widest = 0;
+
+		for (let line of chunk.lines) {
+			widest = Math.max(line.name.length, widest);
+		}
+
+		return chunk.lines.map((line) => utils.pad(line.name + ':', ' ', widest + 5) + line.value).join(EOL);
+	},
+
+	table(chunk) {
+		let lines = [this.formatters.ruler('')];
+
+		lines.push([
+			utils.pad('Qty', ' ', 6, utils.PAD_RIGHT),
+			utils.pad('Product', ' ', this.config.width - 18, utils.PAD_RIGHT),
+			utils.pad('Total', ' ', 12, utils.PAD_LEFT)
+		].join(''));
+
+		lines.push(this.formatters.ruler(''));
+
+		for (let line of chunk.lines) {
+			let total = line.qty * line.cost;
+
+			if (line.hasOwnProperty('discount')) {
+				if (line.discount.type === 'percentage') total *= (1 - line.discount.value);
+				else total -= line.discount.value;
+			}
+
+			lines.push([
+				utils.pad(line.qty, ' ', 6, utils.PAD_RIGHT),
+				utils.pad(line.item.substr(0, this.config.width - 18), ' ', this.config.width - 18, utils.PAD_RIGHT),
+				utils.pad(this.config.currency + utils.money(total), ' ', 12, utils.PAD_LEFT)
+			].join(''));
+
+			if (line.hasOwnProperty('discount')) {
+				let discountText =  line.discount.hasOwnProperty('message')
+					? '  (' + line.discount.message + ')'
+					: '  (Item Disc. -' + (line.discount.type === 'percentage' ? (line.discount.value * 100) + '%' : this.config.currency + utils.money(line.discount.value)) + ')';
+
+				lines.push([
+					utils.pad('', ' ', 6, utils.PAD_RIGHT),
+					discountText
+				].join(''));
+			}
+		}
+
+		lines.push(this.formatters.ruler(''));
+
+		return lines.join(EOL);
+	}
+};
+},{"./utils":9,"os":1}],8:[function(require,module,exports){
+'use strict';
+
+const EOL = require('os').EOL;
+const formatters = require('./formatters');
+
+const receipt = {
+	config: {
+		currency: '$',
+		width: 50,
+		ruler: '='
+	},
+
+	formatters: { },
+
+	create(chunks) {
+		return chunks.map((chunk) => {
+			if (chunk.hasOwnProperty('type')) {
+				return this.formatters[chunk.type](chunk, this.config);
+			}
+
+			return '';
+		}).join(EOL);
+	},
+
+	addFormatter(name, handler) {
+		if (!this.formatters.hasOwnProperty(name)) {
+			this.formatters[name] = handler.bind(this);
+		} else {
+			throw new Error('Formatter named "' + name + '" already exists.');
+		}
+	},
+
+	addFormatters(formatters) {
+		for (let name in formatters) {
+			this.addFormatter(name, formatters[name]);
+		}
+	}
+};
+
+receipt.addFormatters({
+	empty: formatters.empty,
+	ruler: formatters.ruler,
+	text: formatters.text,
+	properties: formatters.properties,
+	table: formatters.table
+});
+
+module.exports = receipt;
+},{"./formatters":7,"os":1}],9:[function(require,module,exports){
+'use strict';
+
+// Simply using 'toFixed' gives false results (e.g. 1.55 => 1.5).
+const roundTo = require('round-to');
+
+module.exports = {
+	PAD_LEFT: 'left',
+	PAD_RIGHT: 'right',
+	PAD_BOTH: 'both',
+
+	pad(value, char, length, side) {
+		side = typeof side === 'undefined' ? 'right' : side;
+
+		let padding = '';
+		let required = Math.floor(length) - value.toString().length;
+
+		while (required > 0) {
+			required -= 1;
+
+			if (side === this.PAD_LEFT) value = char + value;
+			if (side === this.PAD_RIGHT) value = value + char;
+
+			if (side === this.PAD_BOTH) {
+				if (required % 2 === 0) value = char + value;
+				else value = value + char;
+			}
+		}
+
+		return value;
+	},
+
+	money(cents) {
+		return roundTo(cents / 100, 2).toFixed(2);
+	}
+};
+},{"round-to":10}],10:[function(require,module,exports){
+'use strict';
+var numberIsInteger = require('number-is-integer');
+
+function round(fn, x, precision) {
+	if (typeof x !== 'number') {
+		throw new TypeError('Expected value to be a number');
+	}
+
+	if (!numberIsInteger(precision)) {
+		throw new TypeError('Expected precision to be an integer');
+	}
+
+	var exponent = precision > 0 ? 'e' : 'e-';
+	var exponentNeg = precision > 0 ? 'e-' : 'e';
+	precision = Math.abs(precision);
+
+	return Number(Math[fn](x + exponent + precision) + exponentNeg + precision);
+}
+
+var fn = module.exports = round.bind(null, 'round');
+fn.up = round.bind(null, 'ceil');
+fn.down = round.bind(null, 'floor');
+
+},{"number-is-integer":4}]},{},[2]);
+
+</script>
+<script>
+    app = new Vue(
+        {
+            el:'#panel',
+            data: {
+                patientList: ['9585841964'],
+                drugList: ['Paracetamol', 'Ibuprofen', 'Aspirin', 'Pantoprazole', 'Omeprazole'],
+                name: '',
+                drug: '',
+                selected: null,
+                showPatientDetail: false,
+                insuranceSelected: false,
+                loading: false,
+                page: 'records',
+                addedDrugs: [],
+                file: null,
+                medblocks : [],
+
+            },
+            computed: {
+                filteredDataArray() {
+                return this.patientList.filter((option) => {
+                    return option
+                        .toString()
+                        .toLowerCase()
+                        .indexOf(this.name.toLowerCase()) >= 0
+                })
+            },
+            filteredDrugArray() {
+                return this.drugList.filter((option) => {
+                    return option
+                        .toString()
+                        .toLowerCase()
+                        .indexOf(this.name.toLowerCase()) >= 0
+                })
+            }
+            },
+            methods: {
+                loadAndShow() {
+                    this.loading = true
+                    setTimeout(()=>{
+                        axios.get('/medblock/')
+                        .then(r=>r.data)
+                        .then(data=>{this.medblocks=data})
+                        .then(()=>{
+                            this.loading=false;
+                            this.showPatientDetail=true
+                            })
+                    }, 500)
+                    
+                    // this.medblocks = response.data
+                },
+                confirmUpload() {
+                    this.$dialog.confirm({
+                    title: 'Confirm Upload',
+                    message: `
+                    <div class="has-text-centered">
+                    This will encrypt and upload <strong>${this.file.name}</strong> to the network. <strong>Confirm?</strong>
+                    
+                    </div>
+                    <hr>
+                    <div class="has-text-centered">
+                    Identity: <strong>Ramya, Insurance Desk</strong>
+                    <br>
+                    <span class="is-size-3 is-success">
+                    <i class="far fa-credit-card"></i>
+                    </span>
+                    <br>
+                    Please insert authentication card 
+                    </div>
+                    `,
+                    onConfirm: () => {
+                        this.$toast.open('File uploaded!');
+                        this.upload();
+                        }
+                })
+                },
+                generateBill(){
+                    console.log(createDrugReciept(this.addedDrugs));
+                    this.$dialog.confirm({
+                    title: 'Confirm Upload',
+                    message: `
+                    <div class="has-text-centered">
+                    This will encrypt and upload <strong>Invoice 1123</strong> to the network. <strong>Confirm?</strong>
+                    
+                    </div>
+                    <hr>
+                    <div class="has-text-centered">
+                    Identity: <strong>Aditya, Satellite Pharmacy</strong>
+                    <br>
+                    <span class="is-size-3 is-success">
+                    <i class="far fa-credit-card"></i>
+                    </span>
+                    <br>
+                    Please insert authentication card 
+                    </div>
+                    `,
+                    onConfirm: () => {
+                        this.$toast.open('File uploaded!');
+                        this.uploadBill();
+                        }
+                    
+                });
+                
+                },
+                uploadBill() {
+                    pdf = new jsPDF
+                    pdf.setFont("courier")
+                    pdf.text(createDrugReciept(this.addedDrugs), 2, 10)
+                    form = new FormData()
+                    form.append('type', 'MEDBLOCK:INVOICE')
+                    form.append('data', JSON.stringify({
+                        links: this.addedDrugs}))
+                    form.append('file', pdf.output('blob'), "INVOICE.pdf")
+                    form.append('createdBy', "Satellite Pharmacy, Demo Hospital")
+                    form.append('insuranceHasPermission', false)
+                    axios.post(
+                        '/medblock/',
+                        form,
+                        {
+                            headers: {
+                                'X-CSRFToken': Cookies.get('csrftoken'),
+                                'Content-Type': 'multipart/form-data',
+                            }
+                        }
+                    )
+                    .then(()=> this.addedDrugs = [] )
+                },
+
+                upload() {
+                    form = new FormData()
+                    form.append('type', 'MEDBLOCK:FILE')
+                    form.append('data',this.file.name)
+                    form.append('file', this.file)
+                    form.append('createdBy', "Insurance Desk, Demo Hospital")
+                    form.append('insuranceHasPermission', false)
+                    axios.post(
+                        '/medblock/',
+                        form,
+                        {
+                            headers: {
+                                'X-CSRFToken': Cookies.get('csrftoken'),
+                                'Content-Type': 'multipart/form-data',
+                            }
+                        }
+                    )
+                    .then(this.loadAndShow())
+                },
+
+                insurancePermission(hash) {
+                    axios.patch(
+                        '/medblock/'+hash+'/',
+                        {'insuranceHasPermission': true}
+                    )
+                    .then(this.loadAndShow())
+                }
+            }
+            
+        }
+        )
+header = `---------------------------------DRUG INVOICE---------------------------------\n` +
+app.addedDrugs.map(drug => `${drug[0]} ------------------------------------------- ${drug[1]}`).join('\n') +
+`\n------------------------------------------------------------------------------`;
+</script>
+</html>
+{% endverbatim %}
